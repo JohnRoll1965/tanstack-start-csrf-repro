@@ -87,3 +87,23 @@ export const startInstance = createStart(() => ({
 ```
 
 Then prove it: a cross-site POST to any server function should return 403.
+
+## Recorded output
+
+`./repro.sh` on Linux, Node 22.21.1, after a clean `pnpm install --frozen-lockfile`:
+
+```text
+node v22.21.1, @tanstack/react-start 1.168.41
+
+== a-baseline: export const startInstance = undefined
+foreign origin (Origin: https://evil.example):  403 Forbidden
+correct origin (Origin: http://localhost:3311): 200 ok, wrote: "same-site write"
+
+== b-bug: export const startInstance = createStart(() => ({ requestMiddleware: [unrelatedMiddleware] }))
+foreign origin (Origin: https://evil.example):  200 ok, wrote: "cross-site write"
+correct origin (Origin: http://localhost:3311): 200 ok, wrote: "same-site write"
+
+== c-fix: export const startInstance = createStart(() => ({ requestMiddleware: [csrfMiddleware, unrelatedMiddleware] }))
+foreign origin (Origin: https://evil.example):  403 Forbidden
+correct origin (Origin: http://localhost:3311): 200 ok, wrote: "same-site write"
+```
