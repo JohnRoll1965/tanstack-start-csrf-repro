@@ -15,4 +15,4 @@ const csrfMiddleware = createCsrfMiddleware({
 //      (@tanstack/react-start/dist/plugin/default-entry/start.ts), used when src/start.ts is absent.
 //   B: a start instance with only the unrelated middleware. Default CSRF is gone.
 //   C: the same instance with csrfMiddleware re-added, first.
-export const startInstance = undefined
+export const startInstance = createStart(() => ({ requestMiddleware: [unrelatedMiddleware] }))
